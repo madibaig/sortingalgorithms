@@ -23,8 +23,10 @@ public class RunSorterImplementations {
         }
     );
 
-    System.out.println(defaultSorter.selectionSort(listToSort));
-    System.out.println(defaultSorter.selectionSort(listToSort).equals(sortedList));
+    defaultSorter.mergeSort(listToSort);
+
+    System.out.println(listToSort);
+    System.out.println(listToSort.equals(sortedList));
   }
 
 }
