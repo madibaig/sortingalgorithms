@@ -23,7 +23,7 @@ public class RunSorterImplementations {
         }
     );
 
-    defaultSorter.mergeSort(listToSort);
+    defaultSorter.bubbleSort(listToSort);
 
     System.out.println(listToSort);
     System.out.println(listToSort.equals(sortedList));

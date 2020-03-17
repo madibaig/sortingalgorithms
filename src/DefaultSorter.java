@@ -28,10 +28,7 @@ public class DefaultSorter implements Sorter {
           minimum = j;
         }
       }
-      //swap minimum at i position
-      E temp = list.get(i);
-      list.set(i, list.get(minimum));
-      list.set(minimum, temp);
+      swap(list, minimum, i);
     }
   }
 
@@ -89,15 +86,53 @@ public class DefaultSorter implements Sorter {
   }
 
   @Override
+  public <E extends Comparable> void quickSort(List<E> list) {
+    //If the size of list is 1 or 0, return it
+    //Pick the pivot as the middle element
+    //From the start and end of the list's elements go inwards
+    //(using Hoare partition scheme as found on wikipedia for quicksort)
+
+    if (list.size() == 1 || list.size() == 0) {
+      return;
+    }
+
+    E pivot = list.get((list.size() / 2) - 1);
+    int left = -1; int right = list.size();
+    int nextPivot;
+    while (true) {
+      do {
+        left++;
+      } while (list.get(left).compareTo(pivot) < 0);
+      do {
+        right--;
+      } while (list.get(right).compareTo(pivot) > 0);
+      if (left >= right) {
+        nextPivot = right + 1;
+        break;
+      }
+      swap(list, left, right);
+    }
+
+    quickSort(list.subList(0, nextPivot));
+    quickSort(list.subList(nextPivot, list.size()));
+  }
+
+  @Override
   public <E extends Comparable> void heapSort(List<E> list) {
   }
 
   @Override
-  public <E extends Comparable> void quickSort(List<E> list) {
-  }
-
-  @Override
   public <E extends Comparable> void bubbleSort(List<E> list) {
+    boolean swapped = false;
+    do {
+      swapped = false;
+      for (int i = 1; i < list.size(); i++) {
+        if (list.get(i - 1).compareTo(list.get(i)) > 0) {
+          swap(list, i - 1, i);
+          swapped = true;
+        }
+      }
+    } while (swapped);
   }
 
   @Override
@@ -114,5 +149,13 @@ public class DefaultSorter implements Sorter {
 
   @Override
   public <E extends Comparable> void radixSort(List<E> list) {
+  }
+
+  /** Swaps two elements in a list at the specified indexes.
+   *  **/
+  private <E> void swap(List<E> list, int i, int j) {
+    E temp = list.get(i);
+    list.set(i, list.get(j));
+    list.set(j, temp);
   }
 }
