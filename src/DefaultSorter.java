@@ -2,6 +2,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultSorter implements Sorter {
+  //Taken from https://en.wikipedia.org/wiki/Shellsort - Marcin Ciura's sequence
+  private final int[] SHELLSORT_GAPS = {701, 301, 132, 57, 23, 10, 4, 1};
+  //Taken from https://en.wikipedia.org/wiki/Comb_sort
+  private final double COMBSORT_SHRINK = 1.3;
 
   @Override
   public <E extends Comparable> void insertionSort(List<E> list) {
@@ -119,6 +123,44 @@ public class DefaultSorter implements Sorter {
 
   @Override
   public <E extends Comparable> void heapSort(List<E> list) {
+    buildMaxHeap(list);
+
+    int endOfUnsorted = list.size() - 1;
+
+    for (E e : list) {
+      swap(list, 0, endOfUnsorted);
+      endOfUnsorted--;
+      fixMaxHeap(list.subList(0, endOfUnsorted - 1));
+    }
+  }
+
+  private <E extends Comparable> void buildMaxHeap(List<E> list) {
+    //TODO: buildMaxHeap out of a list for use in heapsort
+  }
+
+  private <E extends Comparable> void fixMaxHeap(List<E> subList) {
+    /*TODO: implement a fixMaxHeap algorithm where the heap is represented by a
+      list */
+  }
+
+  @Override
+  public <E extends Comparable> void shellSort(List<E> list) {
+    for (int gap : SHELLSORT_GAPS) {
+      if (gap >= list.size()) { //If gap is >= than the list size, skip it
+        continue;
+      }
+
+      for (int i = gap; i < list.size(); i++) {
+        E temp = list.get(i);
+        int j;
+        for (j = i;
+            j >= gap && list.get(j - gap).compareTo(temp) > 0;
+            j -= gap) {
+          list.set(j, list.get(j - gap));
+        }
+        list.set(j, temp);
+      }
+    }
   }
 
   @Override
@@ -137,18 +179,37 @@ public class DefaultSorter implements Sorter {
 
   @Override
   public <E extends Comparable> void combSort(List<E> list) {
+    int gap = list.size();
+    boolean sorted = false;
+
+    while (!sorted) {
+      gap = (int) (gap / COMBSORT_SHRINK);
+
+      if (gap < 1) {
+        gap = 1;
+        sorted = true;
+      }
+
+      int i = 0;
+      while (i + gap < list.size()) {
+        if (list.get(i).compareTo(list.get(i + gap)) > 0) {
+          swap(list, i, i + gap);
+          sorted = false;
+        }
+        i++;
+      }
+    }
   }
 
-  @Override
-  public <E extends Comparable> void countingSort(List<E> list) {
-  }
-
-  @Override
-  public <E extends Comparable> void bucketSort(List<E> list) {
-  }
-
-  @Override
-  public <E extends Comparable> void radixSort(List<E> list) {
+  /** isSorted takes a list and returns true if it is sorted in ascending order
+   *  */
+  public <E extends Comparable> boolean isSorted(List<E> list) {
+    for (int i = 0; i < list.size() - 1; i++) {
+      if (list.get(i).compareTo(list.get(i + 1)) > 0) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /** Swaps two elements in a list at the specified indexes.
